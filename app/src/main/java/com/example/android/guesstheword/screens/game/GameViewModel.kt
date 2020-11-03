@@ -1,6 +1,7 @@
 package com.example.android.guesstheword.screens.game
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,10 @@ class GameViewModel : ViewModel() {
     val score: LiveData<Int>
         get() = _score
 
+    private val _finish = MutableLiveData<Boolean>()
+    val finishTrigger: LiveData<Boolean>
+        get() = _finish
+
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
@@ -24,6 +29,7 @@ class GameViewModel : ViewModel() {
         resetList()
         nextWord()
         _score.value = 0
+        _finish.value = false
     }
 
     override fun onCleared() {
@@ -80,10 +86,15 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-//            gameFinished()
+            _finish.value = true
+//            _finish.value = false // here or with helper function ex: onGamaFinishedComplete
         } else {
             _word.value = wordList.removeAt(0)
         }
+    }
+
+    fun onGamaFinishedComplete() {
+        _finish.value = false
     }
 
 
