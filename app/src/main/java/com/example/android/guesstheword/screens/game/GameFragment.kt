@@ -21,12 +21,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.android.guesstheword.R
@@ -52,23 +49,16 @@ class GameFragment : Fragment() {
                 false
         )
 
-        Log.i("GameFragment", "Called ViewModelProviders.of")
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
         binding.gameViewModel = viewModel
 
         binding.lifecycleOwner = this
 
-        viewModel.apply {
-            finishTrigger.observe(viewLifecycleOwner, Observer { isfinish ->
-                if (isfinish) gameFinished()
-            })
+        viewModel.finishTrigger.observe(viewLifecycleOwner, Observer { isfinish ->
+            if (isfinish) gameFinished()
+        })
 
-            timeCount.observe(viewLifecycleOwner, Observer { time ->
-                binding.timerText.text = time
-            })
-
-        }
 
         return binding.root
 
