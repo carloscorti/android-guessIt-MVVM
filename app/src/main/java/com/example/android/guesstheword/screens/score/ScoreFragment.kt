@@ -17,6 +17,7 @@
 package com.example.android.guesstheword.screens.score
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +43,7 @@ class ScoreFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
 
+        // Get args and passing them as ScoreViewModel constructor via custom ScoreViewModelFactory
         scoreViewModelFactory = ScoreViewModelFactory(ScoreFragmentArgs.fromBundle(requireArguments()).score)
         scoreViewModel = ViewModelProvider(this, scoreViewModelFactory).get(ScoreViewModel::class.java)
 
@@ -54,20 +56,20 @@ class ScoreFragment : Fragment() {
                 false
         )
 
-        // Get args using by navArgs property delegate
-//        val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
-//        val scoreFragmentArgs = ScoreFragmentArgs.fromBundle(requireArguments())
+        binding.scoreViewModel = scoreViewModel
 
-//        binding.scoreText.text = scoreFragmentArgs.score.toString()
         scoreViewModel.score.observe(viewLifecycleOwner, Observer { score ->
             binding.scoreText.text = score.toString()
         })
-        binding.playAgainButton.setOnClickListener { onPlayAgain() }
+
+        scoreViewModel.eventPlayAgain.observe(viewLifecycleOwner, Observer { playAgain ->
+//            Log.i("cacScoreFragment", "playaAgain is $playAgain")
+            if (playAgain) {
+//                Log.i("cacScoreFragment", "Change from score restart")
+                findNavController().navigate(ScoreFragmentDirections.actionRestart())
+            }
+        })
 
         return binding.root
-    }
-
-    private fun onPlayAgain() {
-        findNavController().navigate(ScoreFragmentDirections.actionRestart())
     }
 }

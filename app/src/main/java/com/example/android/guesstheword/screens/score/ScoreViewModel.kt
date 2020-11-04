@@ -11,8 +11,30 @@ class ScoreViewModel(initScore: Int) : ViewModel() {
     val score: LiveData<Int>
         get() = _score
 
+    private val _eventPlayAgain = MutableLiveData<Boolean>()
+    val eventPlayAgain: LiveData<Boolean>
+        get() = _eventPlayAgain
+
     init {
         _score.value = initScore
-//        Log.i("ScoreFragmentViewModel", "The score is ${score.value}")
     }
+
+    private fun onPlayAgain() {
+        _eventPlayAgain.value = true
+    }
+
+    private fun onPlayAgainComplete() {
+        _eventPlayAgain.value = false
+    }
+
+    fun playAgain() {
+        onPlayAgain()
+        onPlayAgainComplete()
+    }
+
+
+//    override fun onCleared() {
+//        super.onCleared()
+//        Log.i("cacSocoreViewmodel", "ScoreViewModel destroyed")
+//    }
 }
