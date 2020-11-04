@@ -58,9 +58,11 @@ class ScoreFragment : Fragment() {
 
         binding.scoreViewModel = scoreViewModel
 
-        scoreViewModel.score.observe(viewLifecycleOwner, Observer { score ->
-            binding.scoreText.text = score.toString()
-        })
+        binding.lifecycleOwner = this
+
+//        scoreViewModel.score.observe(viewLifecycleOwner, Observer { score ->
+//            binding.scoreText.text = score.toString()
+//        })
 
         scoreViewModel.eventPlayAgain.observe(viewLifecycleOwner, Observer { playAgain ->
 //            Log.i("cacScoreFragment", "playaAgain is $playAgain")
