@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -94,7 +95,6 @@ class GameFragment : Fragment() {
         val action = GameFragmentDirections.actionGameToScore(viewModel.score.value ?: 0 )
         findNavController(this).navigate(action)
 //        Toast.makeText(context, "finish game", Toast.LENGTH_SHORT).show()
-        viewModel.onGamaFinishedComplete()
     }
 
 

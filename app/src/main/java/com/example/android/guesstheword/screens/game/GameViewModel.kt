@@ -112,7 +112,7 @@ class GameViewModel : ViewModel() {
 
     }
 
-    fun onGamaFinishedComplete() {
+    private fun onGamaFinishedComplete() {
         _finish.value = false
     }
 
@@ -121,6 +121,7 @@ class GameViewModel : ViewModel() {
         countDownTimer = object : CountDownTimer(topTime, ONE_SECOND) {
             override fun onFinish() {
                 _finish.value = true
+                onGamaFinishedComplete()
             }
 
             override fun onTick(millisUntilFinished: Long) {
