@@ -1,12 +1,30 @@
 package com.example.android.guesstheword.screens.game
 
+import android.os.CountDownTimer
+import android.text.format.DateUtils
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
+// These represent different important times
+// This is when the game is over
+private const val DONE = 0L
+
+// This is the number of milliseconds in a second
+private const val ONE_SECOND = 1000L
+
+// This is the total time of the game
+private const val COUNTDOWN_TIME = 90000L
+
 class GameViewModel : ViewModel() {
+
+    private lateinit var countDownTimer: CountDownTimer
+
+    private val _timeCount = MutableLiveData<String>()
+    val timeCount: LiveData<String>
+        get() = _timeCount
+
     // The current word
     private val _word = MutableLiveData<String>()
     val word: LiveData<String>
@@ -30,11 +48,13 @@ class GameViewModel : ViewModel() {
         nextWord()
         _score.value = 0
         _finish.value = false
+        startTimer()
     }
 
     override fun onCleared() {
         super.onCleared()
         Log.i("GameViewModel", "GameViewModel destroyed!")
+        pauseTimer()
     }
 
 
@@ -86,15 +106,36 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-            _finish.value = true
-//            _finish.value = false // here or with helper function ex: onGamaFinishedComplete
-        } else {
-            _word.value = wordList.removeAt(0)
+            resetList()
         }
+        _word.value = wordList.removeAt(0)
+
     }
 
     fun onGamaFinishedComplete() {
         _finish.value = false
+    }
+
+
+    private fun startTimer(topTime: Long = COUNTDOWN_TIME) {
+        countDownTimer = object : CountDownTimer(topTime, ONE_SECOND) {
+            override fun onFinish() {
+                _finish.value = true
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                _timeCount.value = DateUtils.formatElapsedTime(millisUntilFinished/1000)
+
+            }
+
+        }
+        countDownTimer.start()
+        Log.i("GameViewModel", "start timer from startTimer")
+    }
+
+    private fun pauseTimer() {
+        Log.i("GameViewModel","timer stop")
+        countDownTimer.cancel()
     }
 
 
