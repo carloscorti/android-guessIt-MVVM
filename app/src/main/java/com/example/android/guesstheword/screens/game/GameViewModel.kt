@@ -10,12 +10,26 @@ import androidx.lifecycle.ViewModel
 // These represent different important times
 // This is when the game is over
 private const val DONE = 0L
-
+// This is when game is about to finish
+private const val PANIC_TIME = 5000L
 // This is the number of milliseconds in a second
 private const val ONE_SECOND = 1000L
-
 // This is the total time of the game
 private const val COUNTDOWN_TIME = 90000L
+
+// buzz vibration setups
+private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+private val NO_BUZZ_PATTERN = longArrayOf(0)
+
+// vibrations BuzzType
+enum class BuzzType(val pattern: LongArray) {
+    CORRECT(CORRECT_BUZZ_PATTERN),
+    GAME_OVER(GAME_OVER_BUZZ_PATTERN),
+    COUNTDOWN_PANIC(PANIC_BUZZ_PATTERN),
+    NO_BUZZ(NO_BUZZ_PATTERN)
+}
 
 class GameViewModel : ViewModel() {
 
@@ -44,6 +58,10 @@ class GameViewModel : ViewModel() {
     private val _finish = MutableLiveData<Boolean>()
     val finishTrigger: LiveData<Boolean>
         get() = _finish
+
+    private val _buzzType = MutableLiveData<BuzzType>()
+    val buzzType: LiveData<BuzzType>
+        get() = _buzzType
 
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
@@ -103,6 +121,7 @@ class GameViewModel : ViewModel() {
 
     fun onCorrect() {
         _score.value = score.value?.plus(1)
+        buzzCommand(BuzzType.CORRECT)
         nextWord()
     }
 
@@ -128,11 +147,13 @@ class GameViewModel : ViewModel() {
             override fun onFinish() {
                 _finish.value = true
                 _timeCount.value = DONE
+                buzzCommand(BuzzType.GAME_OVER)
                 onGamaFinishedComplete()
             }
 
             override fun onTick(millisUntilFinished: Long) {
                 _timeCount.value = (millisUntilFinished / ONE_SECOND)
+                if (millisUntilFinished < PANIC_TIME) buzzCommand(BuzzType.COUNTDOWN_PANIC)
             }
 
         }
@@ -145,5 +166,8 @@ class GameViewModel : ViewModel() {
         countDownTimer.cancel()
     }
 
-
+    private fun buzzCommand (buzzType : BuzzType){
+        _buzzType.value = buzzType
+        _buzzType.value = BuzzType.NO_BUZZ
+    }
 }
